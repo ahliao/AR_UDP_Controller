@@ -24,6 +24,7 @@
 
 #include "cv.h"
 #include "highgui.h"
+#include "qr_reader.h"
 
 // Funcs pointer definition
 const vp_api_stage_funcs_t display_stage_funcs = {
@@ -48,7 +49,7 @@ IplImage *ipl_image_from_data(uint8_t* data, int reduced_image, int width, int h
 	currframe = cvCreateImage(cvSize(width,height), IPL_DEPTH_8U, 3);
 	dst = cvCreateImage(cvSize(width,height), IPL_DEPTH_8U, 3);
 
-	currframe->imageData = data;
+	currframe->imageData = (char*)data;
 	cvCvtColor(currframe, dst, CV_BGR2RGB);
 	cvReleaseImage(&currframe);
 
@@ -101,86 +102,6 @@ void getActualFrameSize (display_stage_cfg_t *cfg, uint32_t *width, uint32_t *he
     *height = cfg->decoder_info->height;
 }
 
-// Redraw function, called by GTK each time we ask for a frame redraw
-/*static gboolean
-on_expose_event (GtkWidget *widget,
-                 GdkEventExpose *event,
-                 gpointer data)
-{
-    display_stage_cfg_t *cfg = (display_stage_cfg_t *)data;
-
-    if (2.0 != cfg->bpp)
-    {
-        return FALSE;
-    }
-
-    uint32_t width = 0, height = 0, stride = 0;
-    getPicSizeFromBufferSize (cfg->fbSize, &width, &height);
-    stride = cfg->bpp * width;
-
-    if (0 == stride)
-    {
-        return FALSE;
-    }
-
-    uint32_t actual_width = 0, actual_height = 0;
-    getActualFrameSize (cfg, &actual_width, &actual_height);
-    gtk_window_resize (GTK_WINDOW (widget), actual_width, actual_height);
-
-    cairo_t *cr = gdk_cairo_create (widget->window);
-
-    cairo_surface_t *surface = cairo_image_surface_create_for_data (cfg->frameBuffer, CAIRO_FORMAT_RGB16_565, width, height, stride);
-
-    cairo_set_source_surface (cr, surface, 0.0, 0.0);
-
-    cairo_paint (cr);
-
-    cairo_surface_destroy (surface);
-
-    cairo_destroy (cr);
-
-    return FALSE;
-}*/
-
-/**
- * Main GTK Thread.
- * On an actual application, this thread should be started from your app main thread, and not from a video stage
- * This thread will handle all GTK-related functions
- */
-/*DEFINE_THREAD_ROUTINE(gtk, data)
-{
-    GtkWidget *window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-
-    display_stage_cfg_t *cfg = (display_stage_cfg_t *)data;
-    cfg->widget = window;
-
-    g_signal_connect (window, "expose-event", G_CALLBACK (on_expose_event), data);
-    g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
-
-    gtk_window_set_position (GTK_WINDOW (window), GTK_WIN_POS_CENTER);
-    gtk_window_set_default_size (GTK_WINDOW (window), 10, 10);
-    gtk_widget_set_app_paintable (window, TRUE);
-    gtk_widget_set_double_buffered (window, FALSE);
-
-    gtk_widget_show_all (window);
-
-    gtkRunning = TRUE;
-
-    gtk_main ();
-
-    gtkRunning = FALSE;
-
-    // Force ardrone_tool to close
-    exit_program = 0;
-
-    // Sometimes, ardrone_tool might not finish properly
-    // This happens mainly because a thread is blocked on a syscall
-    // in this case, wait 5 seconds then kill the app
-    sleep (5);
-    exit (0);
-
-    return (THREAD_RET)0;
-}*/
 
 C_RESULT display_stage_open (display_stage_cfg_t *cfg)
 {
@@ -206,30 +127,17 @@ C_RESULT display_stage_transform (display_stage_cfg_t *cfg, vp_api_io_data_t *in
     // Ask GTK to redraw the window
     uint32_t width = 0, height = 0;
     getPicSizeFromBufferSize (in->size, &width, &height);
-	IplImage *img = ipl_image_from_data((uint8_t*)in->buffers[0],1,640,360);
+	IplImage *frame = ipl_image_from_data((uint8_t*)in->buffers[0],1,640,360);
+
+	IplImage* outputimg = cvCreateImage(cvGetSize(frame), frame->depth,1);
+	cvCvtColor(frame, outputimg, CV_RGB2GRAY);
+	QR_Data data;
+	process_QR(outputimg, &data, frame);
+
 	cvNamedWindow("video", CV_WINDOW_AUTOSIZE);
-	cvShowImage("video", img);
+	cvShowImage("video", frame);
 	if(cvWaitKey(1) == 27) exit_program = 0;
-	cvReleaseImage(&img);
-
-	// Not needed
-    // Process only if we are using RGB565
-    /*if (FALSE == cfg->paramsOK)
-    {
-        return C_OK;
-    }
-    // Realloc frameBuffer if needed
-    if (in->size != cfg->fbSize)
-    {
-        cfg->frameBuffer = vp_os_realloc (cfg->frameBuffer, in->size);
-        cfg->fbSize = in->size;
-    }
-    // Copy last frame to frameBuffer
-    vp_os_memcpy (cfg->frameBuffer, in->buffers[in->indexBuffer], cfg->fbSize);
-
-
-    // Tell the pipeline that we don't have any output
-    out->size = 0;*/
+	cvReleaseImage(&frame);
 
     return C_OK;
 }

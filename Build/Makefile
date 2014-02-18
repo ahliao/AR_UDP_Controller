@@ -26,7 +26,8 @@ GENERIC_BINARIES_SOURCE_DIR:=$(SRC_DIR)
 GENERIC_BINARIES_COMMON_SOURCE_FILES+=\
 Video/pre_stage.c\
 Video/post_stage.c\
-Video/display_stage.c
+Video/display_stage.c\
+Video/qr_reader.c
 
 GENERIC_INCLUDES+=					\
 	$(SRC_DIR) \
@@ -45,7 +46,7 @@ GENERIC_INCLUDES:=$(addprefix -I,$(GENERIC_INCLUDES))
 GENERIC_INCLUDES += `pkg-config --cflags opencv`
 
 GENERIC_LIB_PATHS=-L$(GENERIC_TARGET_BINARIES_DIR)
-GENERIC_LIBS=-lpc_ardrone -lrt -lgtk-x11-2.0 `pkg-config --libs opencv` -lcairo
+GENERIC_LIBS=-lpc_ardrone -lrt -lgtk-x11-2.0 `pkg-config --libs opencv` -lcairo -lzbar
 
 
 SDK_FLAGS+="USE_APP=yes"
