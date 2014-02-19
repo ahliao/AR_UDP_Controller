@@ -1,12 +1,12 @@
 #include "qr_reader.h"
 
 // The capture dimensions
-const int FRAME_WIDTH  = 800;
-const int FRAME_HEIGHT = 640;
+const int FRAME_WIDTH  = 600;
+const int FRAME_HEIGHT = 380;
 
 // Where the camera origin is (quadcopter view)
-const int MID_X = 400;
-const int MID_Y = 320;
+const int MID_X = 300;
+const int MID_Y = 190;
 
 // Linear variables for the qr_length to inches (distance)
 const double DISTANCE_M = -0.15;

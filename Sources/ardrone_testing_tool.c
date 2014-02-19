@@ -102,12 +102,13 @@ int main (int argc, char *argv[])
         if ('-' == argv[index][0] &&
             'b' == argv[index][1])
         {
+			printf("Using bottom camera\n");
             videoChannel = ZAP_CHANNEL_VERT;
         }
     }
 
 	printf("Init GTK\n");
-    gtk_init (&prevargc, &prevargv);
+    //gtk_init (&prevargc, &prevargv);
 
     return ardrone_tool_main (prevargc, prevargv);
 }
@@ -134,8 +135,9 @@ C_RESULT ardrone_tool_init_custom (void)
     {
         ardrone_application_default_config.video_codec = drone1Codec;
     }
+	// Pick the video channel (Is no instant)
     ardrone_application_default_config.video_channel = videoChannel;
-    ardrone_application_default_config.bitrate_ctrl_mode = 1;
+ 	ardrone_application_default_config.bitrate_ctrl_mode = 1;
 
     /**
      * Define the number of video stages we'll add before/after decoding
@@ -314,8 +316,8 @@ bool_t ardrone_tool_exit ()
 BEGIN_THREAD_TABLE
 THREAD_TABLE_ENTRY(video_stage, 20)
 //THREAD_TABLE_ENTRY(video_recorder, 20)	// These aren't really needed yet
-//THREAD_TABLE_ENTRY(navdata_update, 20) // Causes the unknown tage 28 and 29 for some reason
-//THREAD_TABLE_ENTRY(ardrone_control, 20)
+THREAD_TABLE_ENTRY(navdata_update, 20) // Causes the unknown tage 28 and 29 for some reason
+THREAD_TABLE_ENTRY(ardrone_control, 20)
 //THREAD_TABLE_ENTRY(gtk, 20)
 END_THREAD_TABLE
 

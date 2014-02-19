@@ -129,6 +129,11 @@ C_RESULT display_stage_transform (display_stage_cfg_t *cfg, vp_api_io_data_t *in
     getPicSizeFromBufferSize (in->size, &width, &height);
 	IplImage *frame = ipl_image_from_data((uint8_t*)in->buffers[0],1,640,360);
 
+	//IplImage* test = cvCreateImage(cvGetSize(frame), frame->depth,frame->nChannels);
+	//double a[9]={-1,20,1,-1,20,1,-1,20,1};
+	//CvMat kernel= cvMat(3,3,CV_32FC1,a);
+	//cvFilter2D(frame,test,&kernel,cvPoint(-1,-1));
+
 	IplImage* outputimg = cvCreateImage(cvGetSize(frame), frame->depth,1);
 	cvCvtColor(frame, outputimg, CV_RGB2GRAY);
 	QR_Data data;
