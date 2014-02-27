@@ -29,11 +29,28 @@ Video/post_stage.c\
 Video/display_stage.c\
 Video/qr_reader.c
 
+GENERIC_BINARIES_COMMON_SOURCE_FILES+=\
+Video/apriltags/apriltag.c\
+Video/apriltags/image_u8.c\
+Video/apriltags/tag36h11.c\
+Video/apriltags/zarray.c\
+Video/apriltags/g2d.c\
+Video/apriltags/graymodel.c\
+Video/apriltags/homography.c\
+Video/apriltags/image_f32.c\
+Video/apriltags/image_u32.c\
+Video/apriltags/matd.c\
+Video/apriltags/segment2.c\
+Video/apriltags/tag36h10.c\
+Video/apriltags/unionfind.c\
+Video/apriltags/workerpool.c\
+Video/apriltags/zhash.c\
+
 GENERIC_INCLUDES+=					\
 	$(SRC_DIR) \
 	$(LIB_DIR) \
 	$(SDK_PATH)/Soft/Common \
-	$(SDK_PATH)/Soft/Lib
+	$(SDK_PATH)/Soft/Lib 
 
 GENERIC_TARGET_BINARIES_PREFIX=
 
@@ -43,10 +60,10 @@ GENERIC_BINARIES_SOURCE_ENTRYPOINTS+=			\
    ardrone_testing_tool.c
 
 GENERIC_INCLUDES:=$(addprefix -I,$(GENERIC_INCLUDES))
-GENERIC_INCLUDES += `pkg-config --cflags opencv`
+GENERIC_INCLUDES += `pkg-config --cflags opencv` -std=gnu99
 
 GENERIC_LIB_PATHS=-L$(GENERIC_TARGET_BINARIES_DIR)
-GENERIC_LIBS=-lpc_ardrone -lrt -lgtk-x11-2.0 `pkg-config --libs opencv` -lcairo -lzbar
+GENERIC_LIBS=-lpc_ardrone -lrt -lgtk-x11-2.0 `pkg-config --libs opencv` -lcairo 
 
 
 SDK_FLAGS+="USE_APP=yes"

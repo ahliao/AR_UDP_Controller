@@ -134,8 +134,8 @@ C_RESULT display_stage_transform (display_stage_cfg_t *cfg, vp_api_io_data_t *in
 	//CvMat kernel= cvMat(3,3,CV_32FC1,a);
 	//cvFilter2D(frame,test,&kernel,cvPoint(-1,-1));
 
-	IplImage* outputimg = cvCreateImage(cvGetSize(frame), frame->depth,1);
-	cvCvtColor(frame, outputimg, CV_RGB2GRAY);
+	IplImage* outputimg = cvCreateImage(cvGetSize(frame), frame->depth,3);
+	cvCvtColor(frame, outputimg, CV_RGB2BGR);
 	QR_Data data;
 	process_QR(outputimg, &data, frame);
 
@@ -143,6 +143,7 @@ C_RESULT display_stage_transform (display_stage_cfg_t *cfg, vp_api_io_data_t *in
 	cvShowImage("video", frame);
 	if(cvWaitKey(1) == 27) exit_program = 0;
 	cvReleaseImage(&frame);
+	cvReleaseImage(&outputimg);
 
     return C_OK;
 }

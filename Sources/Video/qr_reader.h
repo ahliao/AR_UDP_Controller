@@ -13,7 +13,12 @@
 #include <stdio.h>
 #include <highgui.h>
 #include <cv.h>
-#include <zbar.h>
+
+// Include the Libraries for AprilTags
+#include "apriltags/apriltag.h"
+#include "apriltags/image_u8.h"
+#include "apriltags/tag36h11.h"
+#include "apriltags/zarray.h"
 
 // The capture dimensions
 extern const int FRAME_WIDTH;
@@ -40,4 +45,6 @@ typedef struct
 
 void process_QR(IplImage* img, QR_Data * data, IplImage* outimg);
 
+void init_QR();
+void destroy_QR();
 #endif

@@ -49,6 +49,9 @@
 // GTK includes
 #include <gtk/gtk.h>
 
+// QR includes
+#include "Video/qr_reader.h"
+
 int exit_program = 1;
 
 pre_stage_cfg_t precfg;
@@ -109,6 +112,7 @@ int main (int argc, char *argv[])
 
 	printf("Init GTK\n");
     //gtk_init (&prevargc, &prevargv);
+	init_QR();
 
     return ardrone_tool_main (prevargc, prevargv);
 }
@@ -296,6 +300,9 @@ C_RESULT ardrone_tool_shutdown_custom ()
         //video_recorder_resume_thread ();
         //JOIN_THREAD (video_recorder);
     }
+
+	// Destroy the QR Reader
+	destroy_QR();
 
     return C_OK;
 }
