@@ -1,8 +1,8 @@
 Pillar Technologies MDP Team
-Keyboard Controller for the AR Drone 2
+AR_UDP_Controller
 
 Written by: MDP Student Team
 Date Created: 3/1/2014
-Language: C
+Language: C++
 
-Additional: Uses the AR Drone SDK
+Program to receive and send data/commands to the AR Drone 2 via UDP/TCP networking
