@@ -43,7 +43,7 @@ void awake()
 		if (seq < 2) // set the config for reduced data (twice for sureness)
 			sprintf(command, "AT*CONFIG=%d,\"general:navdata_demo\",\"TRUE\"\r", seq);
 		else if ((input = getch()) != 0) 
-		{
+		{	// DO NOT HOLD DOWN KEYS
 			if (input == '1') 
 				sprintf(command, "AT*CONFIG=%d,\"leds:leds_anim\",\"3,1073741824,2\"\r", seq);
 			else if (input == '2') 
@@ -52,13 +52,37 @@ void awake()
 				sprintf(command, "AT*REF=%d,%d\r", seq, 290718208);
 			else if (input == 'z')
 				sprintf(command, "AT*REF=%d,%d\r", seq, 290717696);
+			else if (input == 'x')	// hover
+				sprintf(command, "AT*PCMD=%d,%d,%d,%d,%d,%d\r", seq, 0,
+					0, 0, 0, 0);
+			else if (input == 'w')
+				sprintf(command, "AT*PCMD=%d,%d,%d,%d,%d,%d\r", seq, 1,
+					0, -1097229926, 0, 0);
+			else if (input == 's')
+				sprintf(command, "AT*PCMD=%d,%d,%d,%d,%d,%d\r", seq, 1,
+					0, 1050253722, 0, 0); // 1061997773
+			else if (input == 'a')
+				sprintf(command, "AT*PCMD=%d,%d,%d,%d,%d,%d\r", seq, 1,
+					-1097229926, 0, 0, 0);	// -1085485875 = -0.8
+			else if (input == 'd')
+				sprintf(command, "AT*PCMD=%d,%d,%d,%d,%d,%d\r", seq, 1,
+					1050253722, 0, 0, 0);
+			else if (input == 'm')
+				sprintf(command, "AT*PCMD=%d,%d,%d,%d,%d,%d\r", seq, 1,
+					0, 0, 0, 1050253722);
+			else if (input == 'n')
+				sprintf(command, "AT*PCMD=%d,%d,%d,%d,%d,%d\r", seq, 1,
+					0, 0, 0, -1097229926);
 			else if (input == 'q') {
+				sprintf(command, "AT*REF=%d,%d\r", seq, 290717696);
 				running = 0;
 				break;
 			}
 		}
 		else
-			sprintf(command, "AT*COMWDG=%d\r",seq); // reset comm watchdog
+			sprintf(command, "AT*PCMD=%d,%d,%d,%d,%d,%d\r", seq, 0,
+				0, 0, 0, 0);
+			//sprintf(command, "AT*COMWDG=%d\r",seq); // reset comm watchdog
 
 		sendto(at_socket, command, strlen(command), 0, 
 				(struct sockaddr*)&drone_at, sizeof(drone_at));
