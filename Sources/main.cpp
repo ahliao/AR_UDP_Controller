@@ -21,10 +21,20 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 
+// ffmpeg library for video decoding
+#ifndef INT64_C
+#define INT64_C(c) (c ## LL)
+#define UINT64_C(c) (c ## ULL)
+#endif
+
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+#include <libavutil/avutil.h>
+
 // NCurses API for the keyboard input
 #include <curses.h>
 
-char msg[NAVDATA_BUFFER_SIZE];
+//char navmsg[NAVDATA_BUFFER_SIZE];
 
 int main()
 {
@@ -42,7 +52,6 @@ int main()
 	int l, size;
 	int32_t one = 1, zero = 0;
 
-	//std::cout << "AR Drone 2 Controller v0.01\n";
 	mvprintw(0,0,"AR Drone 2 Controller v0.02\n");
 
 	if(init_ports()) 
@@ -56,31 +65,17 @@ int main()
 		exit(1);
 	}
 
+	// set unicast mode on
+	sendto(navdata_socket, &one, 4, 0, 
+			(struct sockaddr *) &drone_nav, sizeof(drone_nav));
+
 	// fork so that child process will continueously send a wakeup command
 	// for the navdata port
 	while(1) {
 		if (drone_control()) break;
 
-		// set unicast mode on
-		sendto(navdata_socket, &one, 4, 0, (struct sockaddr *) &drone_nav, sizeof(drone_nav));
-
 		// read the navdata received
-		// TODO: Make the navdata reader the child
-		mvprintw(3,0,"Navdata Received");
-		size = 0;
-		size = recvfrom(navdata_socket, &msg[0], NAVDATA_BUFFER_SIZE, 0x0, 
-				(struct sockaddr *)&from, (socklen_t *) &l);
-		mvprintw(4,0,"read %d", size); 
-		data = (navdata_t *) msg;
-		mvprintw(5,0,"header %d", data->header);
-		mvprintw(6,0,"Battery %d", 
-				((navdata_demo_t*)((data->options)))->vbat_flying_percentage);
-		mvprintw(7,0,"Alt %d", 
-				((navdata_demo_t*)((data->options)))->altitude);
-		mvprintw(8,0,"Vx %d",
-				((navdata_demo_t*)((data->options)))->vx);
-		mvprintw(9,0,"Theta %d",
-				((navdata_demo_t*)((data->options)))->theta);
+		if (get_navdata()) break;
 	}
 	// TODO closing program stuff (move to separate function)
 	endwin();

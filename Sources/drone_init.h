@@ -13,6 +13,12 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 
+// NCurses API for the keyboard input
+#include <curses.h>
+
+// Headers from the Parrot API
+#include "navdata_common.h"
+
 // Macros for connecting to the drone
 #define NAVDATA_PORT	5554
 #define AT_PORT			5556
@@ -20,7 +26,6 @@
 #define WIFI_MYKONOS_IP			"192.168.1.1"
 
 //int seq = 0;	// The sequence number
-//char msg[NAVDATA_BUFFER_SIZE];	// navdata message
 
 // The sockets connecting to the drone
 extern int at_socket,			// sendto
@@ -37,5 +42,10 @@ int IEEE754toInt(const float &a);
 // MODIFIES: the required stuff
 // EFFECTS:  Initializes the communication between the computer and drone
 int init_ports();
+
+// REQURIES: navdata_socket is connected with the pc_addr
+// MODIFIES: terminal (ncurses)
+// EFFECTS:  receives the navdata from the drone and displays it
+int get_navdata();
 
 #endif // DRONE_INIT_H
