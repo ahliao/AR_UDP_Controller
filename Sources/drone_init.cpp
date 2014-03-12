@@ -56,11 +56,11 @@ int init_ports()
 	return 0;	// return zero if nothing went wrong
 }
 
-int get_navdata()
+int get_navdata(int i)
 {
 	// read the navdata received
-	mvprintw(3,0,"Navdata Received");
-	int l, size;
+	mvprintw(3,0,"Navdata Received %d", i);
+	int l, size = 0;
 	size = recvfrom(navdata_socket, &msg[0], NAVDATA_BUFFER_SIZE, 0x0, 
 			(struct sockaddr *)&from, (socklen_t *) &l);
 	if (size == 0) return 1;
@@ -73,7 +73,7 @@ int get_navdata()
 			((navdata_demo_t*)((data->options)))->altitude);
 	mvprintw(8,0,"Vx %d",
 			((navdata_demo_t*)((data->options)))->vx);
-	mvprintw(9,0,"Theta %d",
+	mvprintw(9,0,"Theta %f",
 			((navdata_demo_t*)((data->options)))->theta);
 	return 0;
 }

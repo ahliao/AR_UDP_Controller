@@ -33,7 +33,7 @@ char drone_control()
 		sprintf(command, "AT*CONFIG=%d,\"general:navdata_demo\",\"TRUE\"\r", seq);
 	else if (seq < 4) // tell drone it is on flat land
 		sprintf(command, "AT*FTRIM=%d\r", seq);
-	else if ((input = getch()) != 0) 
+	/*else if ((input = getch()) != 0) 
 	{	// DO NOT HOLD DOWN KEYS
 		if (input == '1') 
 			sprintf(command, "AT*CONFIG=%d,\"leds:leds_anim\",\"3,1073741824,2\"\r", seq);
@@ -69,14 +69,14 @@ char drone_control()
 			running = 0;
 			return 1;
 		}
-	}
+	}*/
 	else
 		sprintf(command, "AT*COMWDG=%d\r",seq); // reset comm watchdog
 
 	sendto(at_socket, command, strlen(command), 0, 
 			(struct sockaddr*)&drone_at, sizeof(drone_at));
 	seq++;
-	usleep(100000); // should be less than 0.5s to get all data
+	//usleep(100000); // should be less than 0.5s to get all data
 
 	return 0;
 }
