@@ -45,7 +45,7 @@ int main()
 	// Try getting images
 	cout << "Fetch\n";
 	while(1) {
-		//m_video->fetch();
+		m_video->fetch();
 		m_video->latestImage(p);
 
 		// TODO: multithreading for display and getting video
